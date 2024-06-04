@@ -7,7 +7,7 @@ import time
 pygame.init()
 
 # screen resolution
-res = (720, 720)
+res = (1366, 768)
 
 # opens up a window
 screen = pygame.display.set_mode(res)
@@ -33,7 +33,9 @@ start_button_state = False
 pngs = []
 for i in range(5):
     i+=1
-    pngs.append(pygame.image.load(r"Sprites\idle_" + str(i) + ".png"))
+    png = pygame.image.load(r"Sprites\idle_" + str(i) + ".png")
+    png = pygame.transform.scale(png, (png.get_width() // 2, png.get_height() // 2))  # Resize the image
+    pngs.append(png)
 
 # Button position and size
 button_width = 140
@@ -41,33 +43,71 @@ button_height = 40
 button_x = width // 2 - button_width // 2
 button_y = height - 100  # Adjust this value to move the button higher
 
+# Load the 10 images
+images_not_hovering = [
+    pygame.image.load('unhover_1.png'),
+    pygame.image.load('unhover_2.png'),
+    pygame.image.load('unhover_3.png'),
+    pygame.image.load('unhover_3.png'),
+    pygame.image.load('unhover_5.png')
+]
+
+images_hovering = [
+    pygame.image.load('hover_1.png'),
+    pygame.image.load('hover_2.png'),
+    pygame.image.load('hover_3.png'),
+    pygame.image.load('hover_4.png'),
+    pygame.image.load('hover_5.png')
+]
+
+# Set the initial image index
+image_index_not_hovering = 0
+image_index_hovering = 0
+
+# Load the audio file
+pygame.mixer.music.load('Lament.mp3')
+pygame.mixer.music.play(-1)  # Play in infinite loop
+
+# Add a new variable to track whether the mouse has been clicked while hovering
+hover_clicked = False
+
 # Game loop
 while True:
-    for ev in pygame.event.get():
-        if ev.type == pygame.QUIT:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
+    # Get the mouse position
+    mouse_pos = pygame.mouse.get_pos()
+
+    # Check if the mouse is hovering over the middle of the window
+    if (width / 2 - 150 < mouse_pos[0] < width / 2 + 150 and
+        height / 2 - 50 < mouse_pos[1] < height / 2 + 50):
+        current_image = images_hovering[image_index_hovering]
+        image_index_hovering = (image_index_hovering + 1) % 5  # Cycle through the hovering images
         # checks if a mouse is clicked
-        if ev.type == pygame.MOUSEBUTTONDOWN:
-            mouse = pygame.mouse.get_pos()
-            if button_x <= mouse[0] <= button_x + button_width and button_y <= mouse[1] <= button_y + button_height:
-                start_button_state = not start_button_state
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            hover_clicked = True
+            background_image = pygame.image.load('Dyzanges.png')  # Load the background image
+            screen.blit(background_image, (0, 0))  # Draw the background image on the screen
+            pygame.mixer.music.stop()  # Stop the audio
+            pygame.mixer.music.load('Ascend.mp3')  # Load the new music (Ascend)
+            pygame.mixer.music.play(-1)  # Play the new music on loop
+    else:
+        current_image = images_not_hovering[image_index_not_hovering]
+        image_index_not_hovering = (image_index_not_hovering + 1) % 5  # Cycle through the not hovering images
 
     # fills the screen with a color
-    screen.fill(color_black)
-
-    # Draw the button and text
-    button_color = (255, 0, 0) if start_button_state else (0, 255, 0)
-    pygame.draw.rect(screen, button_color, [button_x, button_y, button_width, button_height])
-    screen.blit(text_start if not start_button_state else text_stop, (button_x + 30, button_y + 5))
-
-    # Animation logic (only run when simulation is running)
-    if start_button_state:
+    if hover_clicked:
+        # Start the simulation
         for i, png in enumerate(pngs):
-            screen.blit(png, (width // 2 - png.get_width() // 2, height // 2 - png.get_height() // 2))
+            screen.blit(png, (300, height // 2 - png.get_height() // 4))
             pygame.display.update()
             time.sleep(0.1)  # Control the animation speed
+    else:
+        # Draw the current image on the screen
+        screen.blit(current_image, (0, 0))  # Draw the current image
 
     # updates the frames of the game
     pygame.display.update()
