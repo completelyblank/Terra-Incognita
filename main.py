@@ -187,15 +187,13 @@ death_animation_finished = False
 clear_animation_finished = False
 range_x=20
 range_y=20
-r_x=200
-r_y=200
 def check_interaction(player_x, player_y):
     global health, experience, player_stats
     print("In the function")
     # Check for collisions with chests
     for i, (chest_x, chest_y) in enumerate(chest_positions):
        print(chest_x, chest_y, "and", player_x, player_y)
-       if (abs(player_x - chest_x) < r_x) and (abs(player_y - chest_y) < r_y):
+       if (abs(player_x - chest_x) < range_x) and (abs(player_y - chest_y) < range_y):
             print("In the chest if!")
             stat_increase = random.choice(['attack', 'defense', 'speed'])
             player_stats[stat_increase] += random.randint(1, 5)
