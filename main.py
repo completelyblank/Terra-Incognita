@@ -1,6 +1,5 @@
 import pygame
 import sys
-import numpy as np
 import time
 import random
 
@@ -176,11 +175,11 @@ chest_image = pygame.transform.scale(chest_image, (pngs[0].get_width(), pngs[0].
 # Generate random chest positions
 chest_positions = []
 for _ in range(5):
-    chest_x = random.randint(0, grid_width - 1)
-    chest_y = random.randint(0, grid_height - 1)
+    chest_x = random.randint(0, width - chest_image.get_width())
+    chest_y = random.randint(0, height - chest_image.get_width())
     while (chest_x, chest_y) in food_positions or (chest_x, chest_y) in enemy_positions:
-        chest_x = random.randint(0, grid_width - 1)
-        chest_y = random.randint(0, grid_height - 1)
+        chest_x = random.randint(0, width - chest_image.get_width())
+        chest_y = random.randint(0, height - chest_image.get_width())
     chest_positions.append((chest_x, chest_y))
 
 # Add a variable to track whether the death animation has finished
@@ -188,12 +187,15 @@ death_animation_finished = False
 clear_animation_finished = False
 range_x=20
 range_y=20
-def check_interaction():
+r_x=200
+r_y=200
+def check_interaction(player_x, player_y):
     global health, experience, player_stats
     print("In the function")
     # Check for collisions with chests
     for i, (chest_x, chest_y) in enumerate(chest_positions):
-       if (abs(player_x - chest_x) < range_x) and (abs(player_y - chest_y) < range_y):
+       print(chest_x, chest_y, "and", player_x, player_y)
+       if (abs(player_x - chest_x) < r_x) and (abs(player_y - chest_y) < r_y):
             print("In the chest if!")
             stat_increase = random.choice(['attack', 'defense', 'speed'])
             player_stats[stat_increase] += random.randint(1, 5)
@@ -282,10 +284,10 @@ while True:
 
                 # redraw the chests at the random positions
                 for chest_x, chest_y in chest_positions:
-                    screen.blit(chest_image, (chest_x * pngs[0].get_width(), chest_y * pngs[0].get_height()))
+                    screen.blit(chest_image, (chest_x, chest_y))
                 
                  # Check interactions
-                check_interaction()
+                check_interaction(player_x, player_y)
                 
                 # Draw the health bar
                 health_bar_index = int((health - 1) / 10)  # Calculate the health bar index from 10 to 0
@@ -317,10 +319,10 @@ while True:
 
                 # redraw the chests at the random positions
                 for chest_x, chest_y in chest_positions:
-                    screen.blit(chest_image, (chest_x * pngs[0].get_width(), chest_y * pngs[0].get_height()))
+                    screen.blit(chest_image, (chest_x, chest_y))
                     
                 # Check interactions
-                check_interaction()
+                check_interaction(player_x, player_y)
                         
                 # Draw the health bar
                 health_bar_index = int((health - 1) / 10)  # Calculate the health bar index from 10 to 0
@@ -353,10 +355,10 @@ while True:
 
                 # redraw the chests at the random positions
                 for chest_x, chest_y in chest_positions:
-                    screen.blit(chest_image, (chest_x * pngs[0].get_width(), chest_y * pngs[0].get_height()))
+                    screen.blit(chest_image, (chest_x, chest_y))
                     
                  # Check interactions
-                check_interaction()
+                check_interaction(player_x, player_y)
                 
                 # Draw the health bar
                 health_bar_index = int((health - 1) / 10)  # Calculate the health bar index from 10 to 0
@@ -387,10 +389,11 @@ while True:
 
                 # redraw the chests at the random positions
                 for chest_x, chest_y in chest_positions:
-                    screen.blit(chest_image, (chest_x * pngs[0].get_width(), chest_y * pngs[0].get_height()))
+                    print(chest_x, chest_y)
+                    screen.blit(chest_image, (chest_x, chest_y))
                 
                  # Check interactions
-                check_interaction()
+                check_interaction(player_x, player_y)
                 
                 # Draw the health bar
                 health_bar_index = int((health - 1) / 10)  # Calculate the health bar index from 10 to 0
@@ -439,7 +442,7 @@ while True:
 
             # Draw the chests at the random positions
             for chest_x, chest_y in chest_positions:
-                screen.blit(chest_image, (chest_x * pngs[0].get_width(), chest_y * pngs[0].get_height()))
+                screen.blit(chest_image, (chest_x, chest_y))
 
             # Update the display
             pygame.display.update()
